@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Juegos de Estudio</title>
+<style>
+body{font-family:Arial;margin:0;background:#f3f4f6;color:#333;}
+header{background:#4f46e5;color:white;padding:20px;text-align:center;font-size:1.5rem;}
+.container{width:90%;max-width:900px;margin:20px auto;background:white;padding:20px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);}
+textarea{width:100%;height:180px;padding:10px;font-size:1rem;border-radius:8px;border:1px solid #ccc;resize:none;}
+select,button{padding:10px;font-size:1rem;border-radius:8px;border:none;cursor:pointer;}
+select{background:#e5e7eb;width:100%;margin-top:10px;}
+button{background:#4f46e5;color:white;width:100%;margin-top:15px;}
+button:hover{background:#4338ca;}
+.result-box{margin-top:20px;padding:20px;background:#eef2ff;border-radius:10px;}
+</style>
+</head>
+<body>
+<header>📚 Plataforma de Juegos para Estudiar</header>
+<div class="container">
+<h3>1. Pegá tu resumen</h3>
+<textarea id="textoResumen" placeholder="Pegá aquí tu resumen..."></textarea>
+<h3>2. Elegí el tipo de juego</h3>
+<select id="tipoJuego">
+<option value="quiz">Quiz (opción múltiple)</option>
+<option value="vf">Verdadero / Falso</option>
+<option value="flashcards">Flashcards</option>
+<option value="ahorcado">Ahorcado</option>
+<option value="crucigrama">Crucigrama (simple)</option>
+</select>
+<button onclick="generarJuego()">Generar Juego</button>
+<div id="resultado" class="result-box" style="display:none;"></div>
+</div>
+<script>
+function generarJuego(){
+const texto=document.getElementById("textoResumen").value;
+const tipo=document.getElementById("tipoJuego").value;
+const salida=document.getElementById("resultado");
+if(!texto.trim()){alert("Cargá un resumen primero.");return;}
+const oraciones=texto.split(".").filter(o=>o.trim().length>20);
+let html="";
+if(tipo==="quiz") html=genQuiz(oraciones);
+if(tipo==="vf") html=genVF(oraciones);
+if(tipo==="flashcards") html=genFlash(oraciones);
+if(tipo==="ahorcado") html=genAhorcado(texto);
+if(tipo==="crucigrama") html=genCruci(oraciones);
+salida.style.display="block";
+salida.innerHTML=html;}
+function genQuiz(arr){
+let q=arr.slice(0,3);
+let html="<h2>Quiz</h2>";
+q.forEach((o,i)=>{html+=`<p><b>Pregunta ${i+1}:</b> ${o.split(" ").slice(0,10).join(" ")}...</p>
+<ul><li>${o}</li><li>${arr[(i+1)%arr.length]}</li><li>${arr[(i+2)%arr.length]}</li></ul>`;});
+return html;}
+function genVF(arr){
+let html="<h2>Verdadero / Falso</h2>";
+arr.slice(0,4).forEach(o=>{html+=`<p><b>Enunciado:</b> ${o}</p><p>¿V o F?</p>`;});
+return html;}
+function genFlash(arr){
+let html="<h2>Flashcards</h2>";
+arr.slice(0,5).forEach((o,i)=>{html+=`<div style="padding:10px;background:white;margin-bottom:10px;border-radius:8px"><b>Tarjeta ${i+1}</b><br>${o}</div>`;});
+return html;}
+function genAhorcado(texto){
+const palabras=texto.split(" ").filter(w=>w.length>6);
+const palabra=palabras[Math.floor(Math.random()*palabras.length)]?.toUpperCase()||"PALABRA";
+return `<h2>Ahorcado</h2><p>Palabra oculta: <b>${"_ ".repeat(palabra.length)}</b></p>`;}
+function genCruci(arr){
+const palabras=arr[0].split(" ").slice(0,6);
+let html="<h2>Crucigrama Simple</h2>";
+palabras.forEach((p,i)=>{html+=`<p><b>Palabra ${i+1}:</b> ${p.length} letras.</p>`;});
+return html;}
+</script>
+</body>
+</html>
